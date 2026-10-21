@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Search Engine MVP</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        input[type="text"] { width: 75%; padding: 10px; font-size: 16px; }
+        button { padding: 10px 20px; font-size: 16px; }
+        .result-item { margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Mini Search Engine</h1>
+    <form method="GET" action="">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search documents...">
+        <button type="submit">Search</button>
+    </form>
+
+    <hr>
+
+    {% if query %}
+        <h2>Results for "{{ query }}"</h2>
+        {% if results %}
+            <ul>
+                {% for doc in results %}
+                    <div class="result-item">
+                        <h3>{{ doc.title }}</h3>
+                        <p>{{ doc.content }}</p>
+                    </div>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No matching documents found.</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
