@@ -70,3 +70,22 @@ Cloudflare Pages, Vercel, or GitHub Pages for demos; Render or Railway for APIs;
 - Improve test coverage and resilience
 - Add analytics, metrics, or observability
 - Expand functionality once the core MVP is stable
+
+## Intern Profile Database
+
+The database layer stores the spreadsheet as a normalized profile directory:
+
+- `InternProfile` stores identity, role, schedule, contact, employment, and status data.
+- `Location` prevents duplicate city/state/country records.
+- `Skill` is a canonical skill vocabulary shared by many profiles.
+- `InternSkill` is the profile-to-skill join table and can optionally store proficiency from 1–5.
+- `search_keywords` is a generated search document containing each profile's name, role, work mode, location, and skills.
+
+Import or refresh the supplied workbook with:
+
+```bash
+python manage.py migrate
+python manage.py import_intern_profiles /path/to/intern_profiles_database.xlsx
+```
+
+The importer is idempotent: running it again updates the same `Intern ID` records instead of creating duplicates. Blank email and phone cells remain blank, as intended by the source workbook. The import command supports the workbook directly and includes a standard-library fallback when `openpyxl` is not installed.
