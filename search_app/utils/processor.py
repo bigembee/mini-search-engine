@@ -4,47 +4,83 @@ from difflib import get_close_matches
 
 _TOKEN_RE = re.compile(r"[a-z0-9']+")
 
-# Common words used to check spelling
 DICTIONARY = {
-    "hello", "world", "python", "programming", "computer",
-    "apple", "banana", "orange", "good", "bad", "book",
-    "school", "student", "teacher", "love", "happy",
-    "beautiful", "friend", "people", "language", "test",
-    "cat", "dog", "run", "running", "great", "is", "are",
-    "the", "this", "that", "and", "you", "he", "she"
+    "django", "react", "javascript", "java", "sql", "postgres",
+    "database", "backend", "frontend", "api", "developer",
+    "software", "engineer", "design", "machine", "learning",
+    "data", "science", "mobile", "cloud", "security",
+    "good", "head", "python", "programming", "golden"
 }
 
 
 def normalize_token(token):
-    return token.lower().strip("'")
+    if token is None:
+        return ""
+
+    token = str(token).lower().strip()
+    token = token.strip("'")
+    token = re.sub(r"\s+", "", token)
+    return token
 
 
-def correct_spelling(token):
-    if token in DICTIONARY:
+def _remove_repeated_trailing_chars(token):
+    if len(token) < 3:
         return token
 
-    matches = get_close_matches(
-        token, DICTIONARY, n=1, cutoff=0.8
-    )
+    while len(token) > 1 and token[-1] == token[-2]:
+        token = token[:-1]
 
+    return token
+
+
+def correct_spelling(token, vocabulary=None):
+    token = normalize_token(token)
+    if not token:
+        return ""
+
+    known_terms = set(normalize_token(item) for item in (vocabulary or DICTIONARY) if item)
+    if token in known_terms:
+        return token
+
+    candidate = _remove_repeated_trailing_chars(token)
+    if candidate in known_terms:
+        return candidate
+
+    matches = get_close_matches(token, sorted(known_terms), n=1, cutoff=0.72)
     if matches:
         return matches[0]
 
     return token
 
 
-def tokenize(text):
+def _token_variants(tokens):
+    tokens = [normalize_token(token) for token in tokens if normalize_token(token)]
+    variants = set()
+    for i in range(len(tokens) - 1):
+        left, right = tokens[i], tokens[i + 1]
+        variants.add(left + right)
+        variants.add(right + left)
+    return sorted(variants)
+
+
+def tokenize(text, vocabulary=None):
     if not text:
         return []
 
+    raw_tokens = [normalize_token(token) for token in _TOKEN_RE.findall(text.lower()) if normalize_token(token)]
     tokens = []
+    seen_variants = set()
 
-    for token in _TOKEN_RE.findall(text.lower()):
-        cleaned = normalize_token(token)
-
-        if cleaned:
-            corrected = correct_spelling(cleaned)
+    for token in raw_tokens:
+        corrected = correct_spelling(token, vocabulary=vocabulary)
+        if corrected:
             tokens.append(corrected)
+
+    for variant in _token_variants(raw_tokens):
+        corrected = correct_spelling(variant, vocabulary=vocabulary)
+        if corrected and corrected not in seen_variants and corrected not in tokens:
+            tokens.append(corrected)
+            seen_variants.add(corrected)
 
     return tokens
 

@@ -21,7 +21,15 @@ def _score_document(document, query_terms):
 
 
 def rank_documents(documents, query):
-    query_terms = [term for term in tokenize(query) if term]
+    vocabulary = {
+        term
+        for document in documents
+        for term in tokenize(
+            f"{document.get('title', '')} {document.get('content', '')}",
+        )
+        if term
+    }
+    query_terms = [term for term in tokenize(query, vocabulary=vocabulary) if term]
     ranked = []
 
     for document in documents:

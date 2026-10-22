@@ -3,6 +3,7 @@ from datetime import time
 from django.test import SimpleTestCase, TestCase
 
 from .models import InternProfile, Location, Skill
+from .utils.processor import tokenize
 from .utils.ranker import rank_documents
 
 
@@ -18,6 +19,35 @@ class SearchRankingTests(SimpleTestCase):
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0]["title"], "Python for data science")
         self.assertGreater(results[0]["score"], results[1]["score"])
+
+    def test_tokenize_handles_typos_and_extra_spaces(self):
+        tokens = tokenize("  pythn   prgramming   reactt   ")
+
+        self.assertEqual(tokens, ["python", "programming", "react"])
+
+    def test_rank_documents_matches_real_typos_against_document_vocabulary(self):
+        documents = [
+            {"title": "Golden developer", "content": "Strong Python backend engineer."},
+            {"title": "Java developer", "content": "Works with APIs and cloud systems."},
+        ]
+
+        results = rank_documents(documents, "goldern")
+
+        self.assertGreater(len(results), 0)
+        self.assertEqual(results[0]["title"], "Golden developer")
+
+    def test_rank_documents_matches_reversed_or_spaced_name_tokens(self):
+        documents = [
+            {"title": "GoodHead developer", "content": "Builds products with Python."},
+            {"title": "Ada Search", "content": "Works on backend systems."},
+        ]
+
+        reversed_results = rank_documents(documents, "head good")
+        spaced_results = rank_documents(documents, " good   head ")
+
+        self.assertGreater(len(reversed_results), 0)
+        self.assertEqual(reversed_results[0]["title"], "GoodHead developer")
+        self.assertEqual(spaced_results[0]["title"], "GoodHead developer")
 
     def test_returns_empty_results_when_query_is_blank(self):
         documents = [{"title": "Python guide", "content": "Learn Python with hands-on examples."}]
