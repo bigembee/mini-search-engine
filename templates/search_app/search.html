@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Search Engine</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; line-height: 1.5; }
+        form { display: flex; gap: 12px; margin-bottom: 24px; }
+        input[type="text"] { flex: 1; font-size: 1rem; padding: 12px 14px; border: 1px solid #cfd8dc; border-radius: 8px; }
+        button { padding: 12px 20px; border: 0; border-radius: 8px; background: #1565c0; color: white; cursor: pointer; }
+        .meta { color: #546e7a; margin-bottom: 18px; }
+        .result { border: 1px solid #e0e0e0; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; background: #fafafa; }
+        .result h3 { margin: 0 0 8px; }
+        .score { display: inline-block; background: #e3f2fd; color: #0d47a1; border-radius: 999px; font-size: 0.8rem; padding: 4px 8px; margin-bottom: 8px; }
+        .empty-state { color: #546e7a; }
+        .banner { margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <h1>🔎 Mini Search Engine</h1>
+        <p class="meta">A lightweight relevance search demo built without the database layer.</p>
+    </div>
+
+    <form method="get" action="">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search documents..." aria-label="Search query">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if query %}
+        <div class="meta">Found {{ total_results }} result{{ total_results|pluralize }} for "{{ query }}".</div>
+
+        {% if results %}
+            {% for result in results %}
+                <article class="result">
+                    <div class="score">Score: {{ result.score }}</div>
+                    <h3>{{ result.title }}</h3>
+                    <p>{{ result.content }}</p>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p class="empty-state">No matching documents found. Try searching for “python”, “search”, “volcano”, or “remote”.</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
