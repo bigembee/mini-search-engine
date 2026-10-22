@@ -92,7 +92,8 @@ class InternProfile(models.Model):
         skill_names = self.skills.values_list("name", flat=True)
         self.search_keywords = " | ".join([
             self.full_name, self.role, self.get_work_mode_display(),
-            str(self.location), *skill_names,
+            self.get_employment_type_display(), self.get_status_display(),
+            self.work_days, f"{self.daily_hours} hours", str(self.location), *skill_names,
         ])
 
 
