@@ -4,6 +4,8 @@ from difflib import get_close_matches
 
 _TOKEN_RE = re.compile(r"[a-z0-9']+")
 
+# Fallback vocabulary for common search terms. The real matching is stronger when
+# the system compares against the actual indexed document terms.
 DICTIONARY = {
     "django", "react", "javascript", "java", "sql", "postgres",
     "database", "backend", "frontend", "api", "developer",
@@ -54,10 +56,9 @@ def correct_spelling(token, vocabulary=None):
 
 
 def _token_variants(tokens):
-    tokens = [normalize_token(token) for token in tokens if normalize_token(token)]
     variants = set()
-    for i in range(len(tokens) - 1):
-        left, right = tokens[i], tokens[i + 1]
+    for index in range(len(tokens) - 1):
+        left, right = tokens[index], tokens[index + 1]
         variants.add(left + right)
         variants.add(right + left)
     return sorted(variants)
@@ -69,18 +70,19 @@ def tokenize(text, vocabulary=None):
 
     raw_tokens = [normalize_token(token) for token in _TOKEN_RE.findall(text.lower()) if normalize_token(token)]
     tokens = []
-    seen_variants = set()
+    seen = set()
 
     for token in raw_tokens:
         corrected = correct_spelling(token, vocabulary=vocabulary)
-        if corrected:
+        if corrected and corrected not in seen:
             tokens.append(corrected)
+            seen.add(corrected)
 
     for variant in _token_variants(raw_tokens):
         corrected = correct_spelling(variant, vocabulary=vocabulary)
-        if corrected and corrected not in seen_variants and corrected not in tokens:
+        if corrected and corrected not in seen:
             tokens.append(corrected)
-            seen_variants.add(corrected)
+            seen.add(corrected)
 
     return tokens
 
