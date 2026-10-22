@@ -16,6 +16,7 @@ def _search_documents(query):
             "avatar_index": profile.avatar_index,
             "location": str(profile.location),
             "work_mode": profile.get_work_mode_display(),
+            "employment_type": profile.get_employment_type_display(),
             "work_days": profile.work_days,
             "daily_hours": profile.daily_hours,
             "skills": ", ".join(profile.skills.values_list("name", flat=True)),

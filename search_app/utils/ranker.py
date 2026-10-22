@@ -33,7 +33,7 @@ def rank_documents(documents, query):
                 "score": round(score, 2),
                 **{field: document[field] for field in (
                     "full_name", "avatar_index", "location", "work_mode",
-                    "work_days", "daily_hours", "skills",
+                    "work_days", "daily_hours", "skills", "employment_type",
                 ) if field in document},
             })
 

@@ -88,4 +88,4 @@ python manage.py migrate
 python manage.py import_intern_profiles /path/to/intern_profiles_database.xlsx
 ```
 
-The importer is idempotent: running it again updates the same `Intern ID` records instead of creating duplicates. Blank email and phone cells remain blank, as intended by the source workbook. The import command supports the workbook directly and includes a standard-library fallback when `openpyxl` is not installed.
+The importer is idempotent: running it again updates the same `Intern ID` records instead of creating duplicates. Existing employment types and schedules are preserved, so custom full-time, part-time, contract, and intern assignments are not overwritten by the workbook's placeholder values. Blank email and phone cells remain blank, as intended by the source workbook. The import command supports the workbook directly and includes a standard-library fallback when `openpyxl` is not installed.
