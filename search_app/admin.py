@@ -4,7 +4,10 @@ from .models import Document, InternProfile, InternSkill, Location, Skill
 
 @admin.register(InternProfile)
 class InternProfileAdmin(admin.ModelAdmin):
-    list_display = ("intern_id", "full_name", "role", "work_mode", "status", "location")
+    list_display = (
+        "intern_id", "full_name", "role", "employment_type", "work_mode",
+        "work_days", "shift_start", "shift_end", "daily_hours", "status", "location",
+    )
     list_filter = ("role", "work_mode", "status", "employment_type")
     search_fields = ("intern_id", "full_name", "search_keywords")
     filter_horizontal = ("skills",)

@@ -46,6 +46,7 @@ class InternProfile(models.Model):
         INTERN = "intern", "Intern"
         CONTRACT = "contract", "Contract"
         FULL_TIME = "full-time", "Full-time"
+        PART_TIME = "part-time", "Part-time"
 
     class Status(models.TextChoices):
         ACTIVE = "active", "Active"

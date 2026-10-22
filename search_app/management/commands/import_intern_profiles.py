@@ -89,20 +89,31 @@ class Command(BaseCommand):
             location, _ = Location.objects.get_or_create(
                 city=row["City"], state=row["State"], country=row["Country"]
             )
-            profile, _ = InternProfile.objects.update_or_create(
-                intern_id=row["Intern ID"],
-                defaults={
-                    "avatar_index": (int(str(row["Intern ID"]).split("-")[-1]) - 1) % 10,
-                    "full_name": row["Full Name"], "first_name": row["First Name"],
-                    "last_name": row.get("Last Name") or "", "role": row["Role / Specialization"],
-                    "work_mode": row["Work Mode"].lower(), "work_days": row["Work Days"],
-                    "shift_start": excel_time(row["Shift Start"]), "shift_end": excel_time(row["Shift End"]),
-                    "daily_hours": row["Daily Hours"], "location": location,
-                    "email": row.get("Email") or "", "phone": row.get("Phone") or "",
-                    "employment_type": row["Employment Type"].lower().replace(" ", "-"),
-                    "status": row["Status"].lower().replace(" ", "-"),
-                },
+            workforce_defaults = {
+                "work_days": row["Work Days"],
+                "shift_start": excel_time(row["Shift Start"]),
+                "shift_end": excel_time(row["Shift End"]),
+                "daily_hours": row["Daily Hours"],
+                "employment_type": row["Employment Type"].lower().replace(" ", "-"),
+            }
+            profile_defaults = {
+                "avatar_index": (int(str(row["Intern ID"]).split("-")[-1]) - 1) % 10,
+                "full_name": row["Full Name"], "first_name": row["First Name"],
+                "last_name": row.get("Last Name") or "", "role": row["Role / Specialization"],
+                "work_mode": row["Work Mode"].lower(), "location": location,
+                "email": row.get("Email") or "", "phone": row.get("Phone") or "",
+                "status": row["Status"].lower().replace(" ", "-"),
+                **workforce_defaults,
+            }
+            profile, created = InternProfile.objects.get_or_create(
+                intern_id=row["Intern ID"], defaults=profile_defaults
             )
+            if not created:
+                # Keep manual employment/schedule edits made in Admin or the database.
+                for field, value in profile_defaults.items():
+                    if field not in workforce_defaults:
+                        setattr(profile, field, value)
+                profile.save()
             profile.skills.clear()
             for raw_skill in (row.get("Primary Skills") or "").split(","):
                 name = raw_skill.strip()
