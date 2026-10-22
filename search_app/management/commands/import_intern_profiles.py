@@ -92,6 +92,7 @@ class Command(BaseCommand):
             profile, _ = InternProfile.objects.update_or_create(
                 intern_id=row["Intern ID"],
                 defaults={
+                    "avatar_index": (int(str(row["Intern ID"]).split("-")[-1]) - 1) % 10,
                     "full_name": row["Full Name"], "first_name": row["First Name"],
                     "last_name": row.get("Last Name") or "", "role": row["Role / Specialization"],
                     "work_mode": row["Work Mode"].lower(), "work_days": row["Work Days"],

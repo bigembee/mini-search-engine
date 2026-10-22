@@ -54,6 +54,7 @@ class InternProfile(models.Model):
         INACTIVE = "inactive", "Inactive"
 
     intern_id = models.CharField(max_length=20, unique=True)
+    avatar_index = models.PositiveSmallIntegerField(default=0)
     full_name = models.CharField(max_length=150)
     first_name = models.CharField(max_length=80)
     last_name = models.CharField(max_length=80, blank=True)

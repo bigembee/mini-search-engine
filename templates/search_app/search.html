@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Developer Search</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #fff;
+        background-color: #031015;
+        background-image: url("https://www.microsoft.com/en-us/research/wp-content/uploads/2018/08/01_MSR_SIGCOMM_Data_Network_1400x788.png");
+        background-position: center;
+        background-size: cover;
+        background-attachment: fixed;
+      }
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 22px;
+        position: relative;
+        isolation: isolate;
+        background: transparent;
+      }
+      .hero-content {
+        width: min(900px, 100%);
+        text-align: center;
+        margin-top: -45px;
+      }
+      h1 {
+        font-size: clamp(2.25rem, 5vw, 4rem);
+        line-height: 1.08;
+        margin: 0 0 12px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+      }
+      h1 em {
+        font-weight: 800;
+      }
+      .subtitle {
+        margin: 0 auto 30px;
+        max-width: 680px;
+        font-size: clamp(1rem, 2vw, 1.15rem);
+        letter-spacing: 0.02em;
+      }
+      .search-panel {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 14px;
+        border: 1px solid #ffffff;
+        border-radius: 9px;
+        background: #172a31;
+        box-shadow: 0 12px 34px rgba(0, 0, 0, 0.26);
+      }
+      .search-field {
+        min-height: 67px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 0 17px;
+        border-radius: 36px;
+        background: #fff;
+        color: #111;
+        text-align: left;
+      }
+      .search-icon {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 auto;
+      }
+      .field-copy {
+        min-width: 0;
+      }
+      .field-label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+      .field-copy input {
+        width: 100%;
+        border: 0;
+        outline: 0;
+        padding: 0;
+        color: #4f4f4f;
+        background: transparent;
+        font-size: 0.95rem;
+      }
+      .field-copy input::placeholder {
+        color: #686868;
+        opacity: 1;
+      }
+      .search-button {
+        min-height: 54px;
+        padding: 0 29px;
+        border: 0;
+        border-radius: 5px;
+        color: #fff;
+        background: #2463ee;
+        cursor: pointer;
+        font-size: 1.15rem;
+        font-weight: 700;
+        box-shadow: 0 5px 14px rgba(20, 73, 203, 0.4);
+      }
+      .search-button:hover {
+        background: #164fd3;
+      }
+      .results {
+        width: min(900px, calc(100% - 44px));
+        margin: -1px auto 42px;
+        padding: 26px 0 0;
+        color: #fff;
+      }
+      .results-heading {
+        margin: 0 0 18px;
+        font-size: 1.35rem;
+      }
+      .result {
+        margin-bottom: 14px;
+        padding: 18px 20px;
+        border: 1px solid #dde4df;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.24);
+      }
+      .result h2 {
+        margin: 0 0 7px;
+        font-size: 1.1rem;
+      }
+      .result p {
+        margin: 0;
+        color: #536159;
+        line-height: 1.55;
+      }
+      .score {
+        color: #2463ee;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .empty-state {
+        color: #536159;
+      }
+      @media (max-width: 640px) {
+        .hero {
+          min-height: 100vh;
+          padding: 30px 16px;
+        }
+        .hero-content {
+          margin-top: -20px;
+        }
+        .search-panel {
+          padding: 10px;
+        }
+        .search-button {
+          padding: 0 17px;
+          font-size: 1rem;
+        }
+        .search-field {
+          gap: 11px;
+          padding: 0 13px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-content">
+          <h1 id="page-title">Find Your Next <em>Developer</em></h1>
+          <p class="subtitle">
+            Search our intern directory and discover the right developer for
+            your next project.
+          </p>
+          <form
+            class="search-panel"
+            method="get"
+            action="{% url 'search_results' %}"
+          >
+            <label class="search-field" for="developer-search">
+              <svg
+                class="search-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-4-4"></path>
+              </svg>
+              <span class="field-copy">
+                <span class="field-label">Developers</span>
+                <input
+                  id="developer-search"
+                  name="q"
+                  type="search"
+                  value="{{ query }}"
+                  placeholder="Search developer"
+                  aria-label="Search developer"
+                />
+              </span>
+            </label>
+            <button class="search-button" type="submit">Search</button>
+          </form>
+        </div>
+      </section>
+      {% if query %}
+      <section class="results" aria-live="polite">
+        <h2 class="results-heading">{{ total_results }} result{{ total_results|pluralize }} for “{{ query }}”</h2>
+        {% if results %} {% for result in results %}
+        <article class="result">
+          <span class="score">Relevance score: {{ result.score }}</span>
+          <h2>{{ result.title }}</h2>
+          <p>{{ result.content }}</p>
+        </article>
+        {% endfor %} {% else %}
+        <p class="empty-state">
+          No matching developers found. Try a name, role, skill, city, or work
+          mode.
+        </p>
+        {% endif %}
+      </section>
+      {% endif %}
+    </main>
+  </body>
+</html>
